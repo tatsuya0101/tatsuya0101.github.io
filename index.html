@@ -1,9 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="jp">
+
 <head>
-  <title>Hello World</title>
+	<meta charset="utf-8">
+	<title>Leaflet Demo 00</title>
+	<link rel="stylesheet" href="./css/index.css" type="text/css">
+	<link rel="stylesheet" href="./css/leaflet.css" />
+	<script src="./js/leaflet.js"></script>
 </head>
+
 <body>
-  <h1>Hello World!</h1>
+	<image id="logo" src="./images/layers-2x.png">
+		<div id='map'></div>
+
+		<script type="text/javascript">
+			// 要素選択
+			var dataNow;
+			const url = "./data/japan.json";	// 読み込むJSONファイル
+
+			function leafletJS(json) {
+				const map = L.map('map');
+
+				map.setView([35.8, 136.5], 5);
+				L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map); // 目盛表示(長さ)
+
+				//OpenStreetMap:タイルを作成：Mapに追加
+				const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 25,
+					attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+				}).addTo(map);
+
+				//スタイル設定する
+				function style(feature) {
+					return {
+						weight: 2,
+						fillOpacity: 0.9,
+						fillColor: "#FFCC80"
+					};
+				}
+
+				var geojson1 = L.geoJson(json, {
+					style,
+					onEachFeature: stats_PPD_onEachFeature
+				});//.addTo(map);//追加してあればはじめに呼ばれる;
+
+				//レイヤーのグループ化：GeoJson>ポリゴン,Layer>マップ
+				var L_1 = L.layerGroup([geojson1]).addTo(map);
+				var L_2 = L.layerGroup([]);
+
+				//ベース：Map追加
+				const baseLayers = {
+					//'Map': osm
+					'Data 有': L_1,
+					'Data なし': L_2,
+				};
+
+				//オーバレイ：レイヤー追加,
+				const overlays = {
+				};
+				//コントロールとオーバレイの追加
+				const layerControl = L.control.layers(baseLayers, overlays).addTo(map);
+				var icon = L.icon({
+					iconUrl: './images/marker-icon.png',
+					iconSize: [32, 52], // アイコンのサイズ
+					popupAnchor: [0, -10] // ポップアップを開く基準
+				});
+
+				//ハイライト
+				function highlightFeature(e) {
+					var layer = e.target;
+					layer.setStyle({
+						weight: 3,//太線
+					});
+					layer.bringToFront();
+					layer.bindTooltip('<p class="tooltip">名称:' + layer.feature.properties.name + '</br>地方：' + layer.feature.properties.region, { sticky: 'true', direction: 'top', opacity: 0.9 });
+				}
+
+				//リセットハイライト
+				function resetHighlight(e) {
+					var layer = e.target;
+					layer.setStyle({
+						weight: 1,
+					});
+				}
+
+				//モバイルブラウザでのタップ時のハイライト設定
+				function infoFeature_PPD(e) {
+					const stats_layer = e.target;
+					stats_layer.bringToFront();
+					stats_layer.bindTooltip('<p class="tooltip">No：' + stats_layer.feature.properties.no + '</br>名称：' + stats_layer.feature.properties.name + '</br>地方：' + stats_layer.feature.properties.region, { sticky: 'true', direction: 'top', opacity: 0.9 });
+
+				}
+
+				//表示設定（ハイライトやツールチップ）のコントロール
+				function stats_PPD_onEachFeature(feature, layer) {
+					if (L.Browser.mobile) {
+						layer.on({
+							click: infoFeature_PPD
+						});
+					} else {
+						layer.on({
+							mouseover: highlightFeature,
+							mouseout: resetHighlight,
+						});
+					};
+				}
+			}
+
+			// 起動時の処理
+			window.addEventListener("load", () => {
+				// Mapデータの読み込み
+				fetch(url)
+					.then(response => response.json())
+					.then(data => leafletJS(data));
+			});
+		</script>
 </body>
+
 </html>
