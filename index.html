@@ -1,120 +1,32 @@
 <!DOCTYPE html>
-<html lang="jp">
-
+<html>
 <head>
-	<meta charset="utf-8">
-	<title>Leaflet Demo 00</title>
-	<link rel="stylesheet" href="./css/index.css" type="text/css">
-	<link rel="stylesheet" href="./css/leaflet.css" />
-	<script src="./js/leaflet.js"></script>
+  <title>東京駅の地図</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 400px; }
+  </style>
 </head>
-
 <body>
-	<image id="logo" src="./images/layers-2x.png">
-		<div id='map'></div>
 
-		<script type="text/javascript">
-			// 要素選択
-			var dataNow;
-			const url = "./data/japan.json";	// 読み込むJSONファイル
+  <div id="map"></div>
 
-			function leafletJS(json) {
-				const map = L.map('map');
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // 地図を初期化
+    var map = L.map('map').setView([35.681236, 139.767125], 16); // 東京駅を中心とした地図を表示
 
-				map.setView([35.8, 136.5], 5);
-				L.control.scale({ imperial: false, position: 'bottomright' }).addTo(map); // 目盛表示(長さ)
+    // タイルレイヤーを追加
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-				//OpenStreetMap:タイルを作成：Mapに追加
-				const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					maxZoom: 25,
-					attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-				}).addTo(map);
+    // 東京駅にマーカーを追加
+    var marker = L.marker([35.681236, 139.767125]).addTo(map);
 
-				//スタイル設定する
-				function style(feature) {
-					return {
-						weight: 2,
-						fillOpacity: 0.9,
-						fillColor: "#FFCC80"
-					};
-				}
+    // マーカーにポップアップを追加
+    marker.bindPopup("<b>東京駅</b>").openPopup();
+  </script>
 
-				var geojson1 = L.geoJson(json, {
-					style,
-					onEachFeature: stats_PPD_onEachFeature
-				});//.addTo(map);//追加してあればはじめに呼ばれる;
-
-				//レイヤーのグループ化：GeoJson>ポリゴン,Layer>マップ
-				var L_1 = L.layerGroup([geojson1]).addTo(map);
-				var L_2 = L.layerGroup([]);
-
-				//ベース：Map追加
-				const baseLayers = {
-					//'Map': osm
-					'Data 有': L_1,
-					'Data なし': L_2,
-				};
-
-				//オーバレイ：レイヤー追加,
-				const overlays = {
-				};
-				//コントロールとオーバレイの追加
-				const layerControl = L.control.layers(baseLayers, overlays).addTo(map);
-				var icon = L.icon({
-					iconUrl: './images/marker-icon.png',
-					iconSize: [32, 52], // アイコンのサイズ
-					popupAnchor: [0, -10] // ポップアップを開く基準
-				});
-
-				//ハイライト
-				function highlightFeature(e) {
-					var layer = e.target;
-					layer.setStyle({
-						weight: 3,//太線
-					});
-					layer.bringToFront();
-					layer.bindTooltip('<p class="tooltip">名称:' + layer.feature.properties.name + '</br>地方：' + layer.feature.properties.region, { sticky: 'true', direction: 'top', opacity: 0.9 });
-				}
-
-				//リセットハイライト
-				function resetHighlight(e) {
-					var layer = e.target;
-					layer.setStyle({
-						weight: 1,
-					});
-				}
-
-				//モバイルブラウザでのタップ時のハイライト設定
-				function infoFeature_PPD(e) {
-					const stats_layer = e.target;
-					stats_layer.bringToFront();
-					stats_layer.bindTooltip('<p class="tooltip">No：' + stats_layer.feature.properties.no + '</br>名称：' + stats_layer.feature.properties.name + '</br>地方：' + stats_layer.feature.properties.region, { sticky: 'true', direction: 'top', opacity: 0.9 });
-
-				}
-
-				//表示設定（ハイライトやツールチップ）のコントロール
-				function stats_PPD_onEachFeature(feature, layer) {
-					if (L.Browser.mobile) {
-						layer.on({
-							click: infoFeature_PPD
-						});
-					} else {
-						layer.on({
-							mouseover: highlightFeature,
-							mouseout: resetHighlight,
-						});
-					};
-				}
-			}
-
-			// 起動時の処理
-			window.addEventListener("load", () => {
-				// Mapデータの読み込み
-				fetch(url)
-					.then(response => response.json())
-					.then(data => leafletJS(data));
-			});
-		</script>
 </body>
-
 </html>
