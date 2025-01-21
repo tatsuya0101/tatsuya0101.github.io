@@ -1,0 +1,49 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [139.6917, 35.6895] // 東京駅
+      },
+      "properties": {
+        "name": "東京駅",
+        "description": "日本の首都、東京の主要 railway station"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [139.7661, 35.6812], // 新宿駅
+          [139.7714, 35.7136]  // 池袋駅
+        ]
+      },
+      "properties": {
+        "name": "山手線の一部",
+        "description": "東京の環状 railway line"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [139.7534, 35.7078], // 代々木公園の角1
+            [139.7461, 35.6982], // 代々木公園の角2
+            [139.7588, 35.6925], // 代々木公園の角3
+            [139.7661, 35.7021], // 代々木公園の角4
+            [139.7534, 35.7078]  // 代々木公園の角1 (閉じる)
+          ]
+        ]
+      },
+      "properties": {
+        "name": "代々木公園",
+        "description": "東京にある大きな公園"
+      }
+    }
+  ]
+}
