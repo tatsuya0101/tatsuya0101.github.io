@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>データ確認手順書</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <h1>データ確認手順書</h1>
+
+  <h2>1. データの取得</h2>
+  <p>GitHubのリポジトリから、確認したいデータのCSVファイルをダウンロードします。</p>
+
+  <h2>2. データの確認</h2>
+  <ol>
+    <li>CSVファイルをExcelなどの表計算ソフトで開きます。</li>
+    <li>各カラムの値が正しいことを確認します。
+      <ul>
+        <li>緯度、経度は有効な数値であるか</li>
+        <li>観光地名は正しいか</li>
+        <li>概要は適切に記述されているか</li>
+        <li>最終更新日は正しいか</li>
+      </ul>
+    </li>
+    <li>データに誤りや不足がないかを確認します。</li>
+  </ol>
+
+  <h2>3. 地図の確認</h2>
+  <p>データビューアで地図を表示し、マーカーの位置やポップアップの内容が正しいことを確認します。</p>
+
+  <h2>4. その他</h2>
+  <p>データに不明な点や修正が必要な場合は、担当者に問い合わせてください。</p>
+
+  <button onclick="history.back()">戻る</button>
+</body>
+</html>
