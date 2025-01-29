@@ -26,22 +26,32 @@
 <body>
   <h1>作業リスト</h1>
   <button id="back-button" onclick="history.back()">トップに戻る</button>
-  <ul>
-    <li>
-      <a href="#" onclick="showTourismData('観光地.xlsx')">観光地.xlsx</a>
-    </li>
-    <li>ファイル2.xlsx</li>
-    <li>ファイル3.xlsx</li>
-  </ul>
-
+  <ul id="file-list"></ul>
   <script>
-    function showTourismData(fileName) {
-      // ExcelファイルのURL
-      const fileUrl = `work/${fileName}`;
+    const owner = 'tatsuya0101'; // GitHubユーザー名に置き換えてください
+    const repo = 'sample-work-data';
+    const path = '作業データ'; // 取得したいフォルダのパスに置き換えてください
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
 
-      // ここにExcelファイルを読み込んで観光地リストを表示する処理を記述
-      // (詳細は前回の回答を参照)
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const fileList = document.getElementById('file-list');
+        data.forEach(file => {
+          const listItem = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = '#'; // リンクは # に設定
+          link.textContent = file.name;
+          link.onclick = () => showData(file.name);
+          listItem.appendChild(link);
+          fileList.appendChild(listItem);
+        });
+      })
+      .catch(error => console.error(error));
 
+    function showData(fileName) {
+      // data-viewer.html にファイル名を渡して遷移
+      window.location.href = `data-viewer.html?file=${fileName}`;
     }
   </script>
 </body>
