@@ -1,77 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <title>東京観光マップ</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    #map { height: 600px; }
-    .leaflet-popup-content-wrapper {
-      background-color: rgba(255, 255, 255, 0.8);
-      border-radius: 10px;
-    }
-    .leaflet-popup-content {
-      font-size: 16px;
-      line-height: 1.5;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A市 オープンデータ</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f8f8f8;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-around;
+            width: 80%;
+            max-width: 900px;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #CCEEFF; /* パステルブルー */
+            display: flex;
+            flex-direction: column; /* アイコンと文字を縦に */
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+        }
+
+        .icon i {
+            font-size: 60px;
+            color: white;
+            margin-bottom: 10px; /* アイコンと文字の間隔 */
+        }
+
+        .icon-label {
+            font-weight: bold;
+            color: black; /* 文字色を黒に変更 */
+            font-size: 18px; /* 文字サイズを大きく */
+        }
+    </style>
 </head>
 <body>
+    <h1>A市 オープンデータ</h1>
 
-  <div id="map"></div>
+    <div class="container">
+        <a href="work-list.html" class="icon-container">
+            <div class="icon">
+                <i class="fas fa-list"></i>
+                <div class="icon-label">作業リスト</div>
+            </div>
+        </a>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    // 地図の中心座標とズームレベル
-    var map = L.map('map').setView([35.6895, 139.6917], 13);
+        <a href="#" class="icon-container">
+            <div class="icon">
+                <i class="fas fa-sync-alt"></i>
+                <div class="icon-label">最近の更新</div>
+            </div>
+        </a>
 
-    // レトロ調の地図スタイル
-    L.tileLayer('https://{s}.tile.opentstreetmap.fr/hot/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
-    }).addTo(map);
+        <a href="#" class="icon-container">
+            <div class="icon">
+                <i class="fas fa-exclamation-circle"></i>
+                <div class="icon-label">要確認</div>
+            </div>
+        </a>
+    </div>
 
-    // 観光地データ
-    var touristSpots = [
-      {
-        name: "東京タワー",
-        lat: 35.6895,
-        lng: 139.6917,
-        iconUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Tokyo_Tower_070720.jpg/800px-Tokyo_Tower_070720.jpg",
-        description: "東京のシンボルタワー。展望台からは東京の街並みを一望できます。"
-      },
-      {
-        name: "明治神宮",
-        lat: 35.6769,
-        lng: 139.7014,
-        iconUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Meiji_jingu_torii.jpg/800px-Meiji_jingu_torii.jpg",
-        description: "東京都渋谷区にある神社。広大な森の中にあり、都会のオアシスとして親しまれています。"
-      },
-      // 他の観光地データ...
-    ];
-
-    // マーカーのレイヤーグループ
-    var markers = L.layerGroup().addTo(map);
-
-    // 観光地をマーカーとして地図に追加
-    touristSpots.forEach(function(spot) {
-      var marker = L.marker([spot.lat, spot.lng], {
-        icon: L.icon({
-          iconUrl: spot.iconUrl,
-          iconSize: [50, 50], // アイコンサイズを調整
-          iconAnchor: [25, 50], // アイコンのアンカー位置を調整
-          popupAnchor: [0, -50] // ポップアップのアンカー位置を調整
-        })
-      }).addTo(markers);
-
-      // マーカーにポップアップを追加
-      marker.bindPopup("<b>" + spot.name + "</b><br>" + spot.description);
-    });
-
-    // レイヤーコントロールを追加
-    var overlayMaps = {
-      "観光地": markers
-    };
-    L.control.layers(null, overlayMaps).addTo(map);
-  </script>
-
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script> 
 </body>
 </html>
