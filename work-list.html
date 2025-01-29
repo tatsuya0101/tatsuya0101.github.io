@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作業リスト - A市 オープンデータ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    #back-button {
+      /* 戻るボタンのスタイル */
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background-color: #CCEEFF;
+      /* パステルブルー */
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>作業リスト</h1>
+  <button id="back-button" onclick="history.back()">トップに戻る</button>
+  <ul>
+    <li>
+      <a href="#" onclick="showTourismData('観光地.xlsx')">観光地.xlsx</a>
+    </li>
+    <li>ファイル2.xlsx</li>
+    <li>ファイル3.xlsx</li>
+  </ul>
+
+  <script>
+    function showTourismData(fileName) {
+      // ExcelファイルのURL
+      const fileUrl = `work/${fileName}`;
+
+      // ここにExcelファイルを読み込んで観光地リストを表示する処理を記述
+      // (詳細は前回の回答を参照)
+
+    }
+  </script>
+</body>
+
+</html>
