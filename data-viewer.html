@@ -1,109 +1,148 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>データ情報</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <style>
-    #map { height: 400px; }
-    /* 表のスタイル */
-    #data-table {
-        width: 100%; 
-        overflow-x: auto;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データ情報</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
 
-    #data-table th,
-    #data-table td {
-        min-width: 150px; /* 最小幅を150pxに設定 */
-        white-space: nowrap;
-    }
-    /* ストライプ */
-    #data-table tr:nth-child(even) {
-      background-color: #f2f2f2; /* 偶数行に背景色 */
-    }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            color: #007bff;
+            font-size: 2.5em;
+        }
 
-    /* ホバー時のスタイル */
-    #data-table tr:hover {
-      background-color: #e0e0e0; /* ホバー時に背景色 */
-    }
+        #map {
+            height: 400px;
+            width: 80%;
+            max-width: 900px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-    #manual-button {
-    /* 必要なスタイルを記述 */
-        padding: 10px 20px;
-        background-color: #CCEEFF; /* 例：パステルブルー */
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }   
+        #data-table {
+            width: 80%;
+            max-width: 900px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
 
-  </style>
+        #data-table th,
+        #data-table td {
+            min-width: 150px;
+            white-space: nowrap;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            background-color: #fff;
+        }
+
+        #data-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        #data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        #back-button,
+        #manual-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #back-button:hover,
+        #manual-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>データ情報</h1>
-  <table id="data-table"></table>
-  <div id="map"></div>
-  <button onclick="history.back()">戻る</button>
-  <button id="manual-button" onclick="location.href='manual.html'">作業手順書確認</button> <script></script>
+    <h1>データ情報</h1>
+    <table id="data-table"></table>
+    <div id="map"></div>
+    <div class="button-container">
+        <button id="back-button" onclick="history.back()">戻る</button>
+        <button id="manual-button" onclick="location.href='manual.html'">作業手順書確認</button>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileName = urlParams.get('file');
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const fileName = urlParams.get('file');
+        const owner = 'tatsuya0101';
+        const repo = 'sample-work-data';
+        const path = '作業データ/' + fileName;
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
 
-    // GitHub API を使用してCSVファイルの内容を取得
-    const owner = 'tatsuya0101'; // 正しいGitHubユーザー名に置き換えてください
-    const repo = 'sample-work-data'; // 正しいリポジトリ名に置き換えてください
-    const path = '作業データ/' + fileName;
-    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const csvContent = atob(data.content);
+                const decoder = new TextDecoder("UTF-8");
+                const decodedCsvContent = decoder.decode(new Uint8Array([...csvContent].map(c => c.charCodeAt(0))));
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const csvContent = atob(data.content); // Base64 デコード
+                const parsedData = Papa.parse(decodedCsvContent, { header: true }).data;
+                const table = document.getElementById('data-table');
+                const headerRow = table.insertRow();
+                Object.keys(parsedData[0]).forEach(header => {
+                    const headerCell = headerRow.insertCell();
+                    headerCell.textContent = header;
+                });
+                parsedData.forEach(row => {
+                    const dataRow = table.insertRow();
+                    Object.values(row).forEach(value => {
+                        const dataCell = dataRow.insertCell();
+                        dataCell.textContent = value;
+                    });
+                });
 
-        // TextDecoder を使用して Shift_JIS から UTF-8 に変換
-        const decoder = new TextDecoder("UTF-8"); // 適切な文字コードを設定
-        const decodedCsvContent = decoder.decode(new Uint8Array([...csvContent].map(c => c.charCodeAt(0))));
+                const map = L.map('map').setView([35.65, 139.75], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
 
-        // CSVデータをパースしてテーブルに表示
-        const parsedData = Papa.parse(decodedCsvContent, { header: true }).data;
-        const table = document.getElementById('data-table');
-        const headerRow = table.insertRow();
-        Object.keys(parsedData[0]).forEach(header => {
-          const headerCell = headerRow.insertCell();
-          headerCell.textContent = header;
-        });
-        parsedData.forEach(row => {
-          const dataRow = table.insertRow();
-          Object.values(row).forEach(value => {
-            const dataCell = dataRow.insertCell();
-            dataCell.textContent = value;
-          });
-        });
-
-        // Leaflet を使用して地図を初期化
-        const map = L.map('map').setView([35.65, 139.75], 13); // 初期表示位置とズームレベル
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            hue: '#CCEEFF', // 色相をパステルブルーに調整
-            saturation: 50, // 彩度を50%に調整
-        }).addTo(map);
-        
-        
-        
-        //L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //}).addTo(map);
-
-        // CSVデータから緯度経度を取得し、マーカーを地図上に表示
-        parsedData.forEach(row => {
-          L.marker([parseFloat(row['緯度']), parseFloat(row['経度'])]).addTo(map)
-            .bindPopup(`<b>${row['観光地名']}</b><br>${row['概要']}`);
-        });
-      })
-      .catch(error => console.error(error));
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+                parsedData.forEach(row => {
+                    if (row['緯度'] && row['経度']) {
+                        L.marker([parseFloat(row['緯度']), parseFloat(row['経度'])]).addTo(map)
+                            .bindPopup(`<b>${row['名称']}</b><br>${row['概要']}`);
+                    }
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </body>
+
 </html>
