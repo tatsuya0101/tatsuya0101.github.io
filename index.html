@@ -1,71 +1,94 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A市 オープンデータ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #f8f8f8;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 50px;
+            margin-top: 50px;
+            color: #007bff;
+            font-size: 2.5em;
         }
 
         .container {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            flex-wrap: wrap;
             width: 80%;
             max-width: 900px;
+            margin: 50px auto;
         }
 
         .icon-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: inherit;
+            width: 200px;
+            margin: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            text-decoration: none; /* 下線を消す */
         }
 
         .icon {
             width: 150px;
             height: 150px;
-            border-radius: 50%;
-            background-color: #CCEEFF; /* パステルブルー */
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
             display: flex;
-            flex-direction: column; /* アイコンと文字を縦に */
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
+            font-size: 4em;
+            color: #007bff;
+            margin-bottom: 10px;
         }
 
-        .icon:hover {
-            transform: scale(1.1);
-        }
-
-        .icon i {
-            font-size: 60px;
-            color: white;
-            margin-bottom: 10px; /* アイコンと文字の間隔 */
-        }
-
-        .icon-label {
+        .icon-label2 {
+            font-size: 1.2em;
             font-weight: bold;
-            color: black; /* 文字色を黒に変更 */
-            font-size: 18px; /* 文字サイズを大きく */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 30px;
+        }
+        .icon-label3 {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center; /* 文字を中央揃えにする */
+            height: auto; /* 高さを自動調整する */
+        }
+        .icon-label {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center; /* 文字を中央揃えにする */
+            height: auto; /* 高さを自動調整する */
+            display: table-cell; /* table-cellで垂直方向の中央揃え */
+            vertical-align: middle; /* 垂直方向の中央揃え */
+        }
+
+        .icon-container:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .icon-container {
+                width: 45%;
+            }
         }
     </style>
 </head>
+
 <body>
     <h1>A市 オープンデータ</h1>
 
@@ -73,25 +96,26 @@
         <a href="work-list.html" class="icon-container">
             <div class="icon">
                 <i class="fas fa-list"></i>
-                <div class="icon-label">作業リスト</div>
             </div>
+            <div class="icon-label">作業リスト</div>
         </a>
 
         <a href="#" class="icon-container">
             <div class="icon">
                 <i class="fas fa-sync-alt"></i>
-                <div class="icon-label">最近の更新</div>
             </div>
+            <div class="icon-label">最近の更新</div>
         </a>
 
         <a href="#" class="icon-container">
             <div class="icon">
                 <i class="fas fa-exclamation-circle"></i>
-                <div class="icon-label">要確認</div>
             </div>
+            <div class="icon-label">要確認</div>
         </a>
     </div>
 
-    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script> 
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js" crossorigin="anonymous"></script>
 </body>
+
 </html>
