@@ -34,10 +34,16 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #data-table {
+        #data-table-container {
             width: 80%;
             max-width: 900px;
             margin: 20px auto;
+            height: 350px;
+            overflow-y: auto;
+        }
+
+        #data-table {
+            width: 100%;
             border-collapse: collapse;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
@@ -46,11 +52,9 @@
 
         #data-table th,
         #data-table td {
-            min-width: 150px;
-            white-space: nowrap;
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border: 1px solid #ddd;
             background-color: #fff;
         }
 
@@ -91,58 +95,84 @@
 
 <body>
     <h1>データ情報</h1>
-    <table id="data-table"></table>
+
     <div id="map"></div>
+
+    <div id="data-table-container">
+        <table id="data-table"></table>
+    </div>
+
     <div class="button-container">
         <button id="back-button" onclick="history.back()">戻る</button>
-        <button id="manual-button" onclick="location.href='manual.html'">作業手順書確認</button>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const fileName = urlParams.get('file');
+        const csvUrl = urlParams.get('csv_url');
 
-        const owner = 'tatsuya0101';
-        const repo = 'sample-work-data';
-        const path = '作業データ/' + fileName;
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+        if (csvUrl) {
+            fetch(decodeURIComponent(csvUrl))
+                .then(response => response.text())
+                .then(csvData => {
+                    const trimmedCsvData = csvData.split('\n').map(line => line.trim()).join('\n');
+                    const parsedData = Papa.parse(trimmedCsvData, {
+                        header: true,
+                        dynamicTyping: true,
+                        delimiter: ",", // 区切り文字をカンマに明示的に設定
+                        skipEmptyLines: true
+                    }).data;
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                const csvContent = atob(data.content);
-                const decoder = new TextDecoder("UTF-8");
-                const decodedCsvContent = decoder.decode(new Uint8Array([...csvContent].map(c => c.charCodeAt(0))));
+                    const table = document.getElementById('data-table');
+                    const headerRow = table.insertRow();
 
-                const parsedData = Papa.parse(decodedCsvContent, { header: true }).data;
-                const table = document.getElementById('data-table');
-                const headerRow = table.insertRow();
-                Object.keys(parsedData[0]).forEach(header => {
-                    const headerCell = headerRow.insertCell();
-                    headerCell.textContent = header;
-                });
-                parsedData.forEach(row => {
-                    const dataRow = table.insertRow();
-                    Object.values(row).forEach(value => {
-                        const dataCell = dataRow.insertCell();
-                        dataCell.textContent = value;
-                    });
-                });
+                    if (parsedData.length > 0) {
+                        // ヘッダー行の追加
+                        Object.keys(parsedData[0]).forEach(header => {
+                            const headerCell = headerRow.insertCell();
+                            headerCell.textContent = header;
+                            headerCell.style.minWidth = "100px";
+                        });
 
-                const map = L.map('map').setView([35.65, 139.75], 13);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(map);
+                        // データ行の追加
+                        parsedData.forEach(row => {
+                            const dataRow = table.insertRow();
 
-                parsedData.forEach(row => {
-                    if (row['緯度'] && row['経度']) {
-                        L.marker([parseFloat(row['緯度']), parseFloat(row['経度'])]).addTo(map)
-                            .bindPopup(`<b>${row['名称']}</b><br>${row['概要']}`);
+                            // 各カラムのデータをセルに追加
+                            Object.keys(row).forEach(key => {
+                                const dataCell = dataRow.insertCell();
+                                dataCell.textContent = row[key];
+                                dataCell.style.minWidth = "100px";
+                            });
+                        });
+                    } else {
+                        const row = table.insertRow();
+                        const cell = row.insertCell();
+                        cell.textContent = "データがありません。";
                     }
-                });
-            })
-            .catch(error => console.error(error));
+
+                    const map = L.map('map').setView([35.65, 139.75], 13);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    parsedData.forEach(row => {
+                        const lat = Number(row['緯度']);
+                        const lng = Number(row['経度']);
+
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            L.marker([lat, lng]).addTo(map)
+                                .bindPopup(`<b>${row['名称']}</b><br>${row['概要']}`);
+                        } else {
+                            console.error("Invalid latitude or longitude:", row);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching or parsing CSV:', error));
+        } else {
+            alert('CSVファイルのURLが指定されていません。');
+        }
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </body>
 
 </html>
